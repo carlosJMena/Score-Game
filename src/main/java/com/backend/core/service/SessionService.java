@@ -2,10 +2,7 @@ package com.backend.core.service;
 
 import com.backend.core.contentItems.Session;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 
@@ -55,6 +52,7 @@ public class SessionService {
         }
         return false;
     }
+
     /**
      * Method in order to get the session by sessionkey
      *
@@ -63,6 +61,18 @@ public class SessionService {
      */
     public Session getSession(final String sessionkey){
         return sessionActives.get(sessionkey);
+    }
+
+    /**
+     * Method used to remove all the invalid session from the singleton.
+     */
+    public synchronized void removeInvalidSessions() {
+        final Date now = new Date();
+        for (Session session : new ArrayList<>(sessionActives.values())) {
+            if ((now.getTime() - session.getCreatedTime().getTime() > TimeUnit.MINUTES.toMillis(ALIVE_TIME))) {
+                sessionActives.remove(session.getSessionKey());
+            }
+        }
     }
 
 }
