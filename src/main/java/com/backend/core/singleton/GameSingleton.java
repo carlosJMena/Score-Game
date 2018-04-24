@@ -1,4 +1,4 @@
-package com.backend.core.controller;
+package com.backend.core.singleton;
 
 import com.backend.core.contentItems.Session;
 import com.backend.core.exceptions.SessionException;
@@ -9,24 +9,25 @@ import java.util.Map;
 
 import static com.backend.server.KingHttpHandler.USER_ID_PARAMETER;
 
-public class GameController {
+public class GameSingleton {
     /**
      * Singleton instance
      */
-    public static GameController instance;
+    public static GameSingleton instance;
     /**
-     * Instance for the ScoreManager,
-     * where all the score data are stored.
+     * Instance for the ScoreService
+     *
      */
-    private final ScoreService scoreService;
+    public final ScoreService scoreService;
     /**
-     * Instance for the SessionManager,
-     * where all the session data are stored.
+     * Instance for the SessionService
+     *
      */
-    private final SessionService sessionService;
+    public final SessionService sessionService;
 
 
-    public GameController() {
+
+    public GameSingleton() {
         scoreService = new ScoreService();
         sessionService = new SessionService();
     }
@@ -37,11 +38,11 @@ public class GameController {
      *
      * @return the instance initialized
      */
-    public static GameController getInstance() {
+    public static GameSingleton getInstance() {
         if (instance == null) {
-            synchronized (GameController.class) {
+            synchronized (GameSingleton.class) {
                 if (instance == null) {
-                    instance = new GameController();
+                    instance = new GameSingleton();
                 }
             }
         }
@@ -64,7 +65,8 @@ public class GameController {
      *
      * @param sessionKey sessionKey for a valid and active Session
      * @param levelId    level to insert the score
-     * @throws SessionException throw this if the session in invalid
+     * @param score    score to insert
+     * @throws SessionException throw this if the session in not valir
      */
     public void score(int levelId,int score, String sessionKey) throws SessionException {
         if (!sessionService.isSessionValid(sessionKey)) {
@@ -74,7 +76,11 @@ public class GameController {
         Session session = sessionService.getSession(sessionKey);
         scoreService.saveScore(levelId,session.getUserId(),score);
     }
-
+    /**
+     * Get HighScoreList scoreService Request
+     *
+     * @param levelId    level to get the HighScoreList
+     */
     public synchronized String getHighScoreList(Integer levelId) {
         String list = scoreService.getUserScoresByLevel(levelId)!=null?scoreService.getUserScoresByLevel(levelId).toString().replace("[", "").replace("]", "").replace(", ", ","):"";
         return list;

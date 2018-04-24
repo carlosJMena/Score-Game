@@ -1,6 +1,6 @@
 package com.backend.server;
 
-import com.backend.core.controller.GameController;
+import com.backend.core.singleton.GameSingleton;
 import com.sun.net.httpserver.HttpServer;
 
 import java.net.InetAddress;
@@ -27,7 +27,7 @@ public class Server {
                 System.err.println("Unknown Host: " + ex);
             }
             HttpServer httpServer = HttpServer.create(new InetSocketAddress(PORT), 0);
-            httpServer.createContext("/", new KingHttpHandler(GameController.getInstance()));
+            httpServer.createContext("/", new KingHttpHandler(GameSingleton.getInstance()));
             ExecutorService executorService = Executors.newCachedThreadPool();
             httpServer.setExecutor(executorService);
             httpServer.start();

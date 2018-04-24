@@ -11,22 +11,22 @@ import java.util.concurrent.TimeUnit;
 
 public class SessionService {
     /**
-     * Max Time Alive
+     * Max time alive
      */
     public static final int ALIVE_TIME = 10;
 
-    private final Map<String, Session> sessionActives;
+    public final Map<String, Session> sessionActives;
     /**
-     * Instance of SessionManager
+     * Inizialize sessionActives
      */
     public SessionService() {
         sessionActives = new HashMap<>();
     }
     /**
-     * Method used to create a new Session for the selected userId
+     * Method in order to create a new Session
      *
-     * @param userId user to create the new Session
-     * @return the Session created for the user selected
+     * @param userId to create the new Session
+     * @return the Session created for the user
      */
     public synchronized Session createNewSession(final Integer userId) {
         final Date now = new Date();
@@ -37,11 +37,10 @@ public class SessionService {
     }
 
     /**
-     * Method used to validate if an sessionKey is associated
-     * with a Valid and Active Session in the Server
+     * Method in order to know if a session is valid by sessionKey
      *
      * @param sessionKey key for the Session to validate
-     * @return a true if the sessionKey has a valid Session associated
+     * @return a true if the session is valid
      */
     public synchronized boolean isSessionValid(final String sessionKey) {
         Session sessionActive = sessionActives.get(sessionKey);
@@ -56,7 +55,12 @@ public class SessionService {
         }
         return false;
     }
-
+    /**
+     * Method in order to get the session by sessionkey
+     *
+     * @param sessionkey key for the Session to validate
+     * @return the Session from sessionActives
+     */
     public Session getSession(final String sessionkey){
         return sessionActives.get(sessionkey);
     }

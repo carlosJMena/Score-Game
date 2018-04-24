@@ -1,6 +1,6 @@
 package com.backend.server;
 
-import com.backend.core.controller.GameController;
+import com.backend.core.singleton.GameSingleton;
 
 import com.backend.core.exceptions.BadRequestException;
 import com.backend.core.exceptions.HttpMethodException;
@@ -15,36 +15,34 @@ import com.sun.net.httpserver.HttpHandler;
 import sun.net.www.protocol.http.HttpURLConnection;
 
 public class KingHttpHandler implements HttpHandler {
-    /*
-     *  Request for the different services
+    /**
+     *  URL-pattern
      */
-    private static final String LOGIN_REQUEST =  "/(\\d*)/login";
-    private static final String SCORE_REQUEST = "/(\\d*)/score\\?sessionkey=(.*)";
-    private static final String HIGH_SCORE_LIST_REQUEST = "/(\\d*)/highscorelist";
-    /*
+    public static final String LOGIN_REQUEST =  "/(\\d*)/login";
+    public static final String SCORE_REQUEST = "/(\\d*)/score\\?sessionkey=(.*)";
+    public static final String HIGH_SCORE_LIST_REQUEST = "/(\\d*)/highscorelist";
+    /**
      *  Request params
      */
-    public static final String PARAMETER_ATTRIBUTE = "parameters";
-    public static final String REQUEST_PARAMETER = "request";
     public static final String LEVEL_PARAMETER = "levelid";
     public static final String SESSION_KEY_PARAMETER = "sessionkey";
     public static final String SCORE_PARAMETER = "score";
     public static final String USER_ID_PARAMETER = "userid";
-
-    /*
+    /**
      *  Http Content type constants
      */
     public static final String CONTENT_TYPE = "Content-Type";
     public static final String CONTENT_TEXT = "text/plain";
+    /**
+     *  Http Content type constants
+     */
+    public final GameSingleton gameSingleton;
 
-
-    private final GameController gameController;
-
-    /*
+    /**
     *  Constructor
     */
-    public KingHttpHandler(GameController instance) {
-        this.gameController = instance;
+    public KingHttpHandler(GameSingleton instance) {
+        this.gameSingleton = instance;
     }
 
 
@@ -55,15 +53,15 @@ public class KingHttpHandler implements HttpHandler {
         try{
             if(request.matches(LOGIN_REQUEST)){
                 Map<String, String> loginParams = this.getLoginParameters(httpExchange);
-                httpBody = gameController.login(loginParams);
+                httpBody = gameSingleton.login(loginParams);
             }else if(request.matches(SCORE_REQUEST)){
                 Map<String, String> scoreParams = this.getScoreParameters(httpExchange);
-                gameController.score(Integer.parseInt(scoreParams.get(LEVEL_PARAMETER)),Integer.parseInt(scoreParams.get(SCORE_PARAMETER)),scoreParams.get(SESSION_KEY_PARAMETER));
+                gameSingleton.score(Integer.parseInt(scoreParams.get(LEVEL_PARAMETER)),Integer.parseInt(scoreParams.get(SCORE_PARAMETER)),scoreParams.get(SESSION_KEY_PARAMETER));
             } else if (request.matches(HIGH_SCORE_LIST_REQUEST)) {
                 Map<String, String> highScoreListParams = this.getHighScoreListParams(httpExchange);
-                httpBody = gameController.getHighScoreList(Integer.parseInt(highScoreListParams.get(LEVEL_PARAMETER)));
+                httpBody = gameSingleton.getHighScoreList(Integer.parseInt(highScoreListParams.get(LEVEL_PARAMETER)));
             } else {
-                System.out.println("A HUIRRR!!");
+                httpCode = HttpURLConnection.HTTP_NOT_FOUND;
             }
 
         }catch(HttpMethodException e){
@@ -87,8 +85,13 @@ public class KingHttpHandler implements HttpHandler {
         os.close();
 
     }
-
-    private Map<String,String> getHighScoreListParams(HttpExchange httpExchange) throws HttpMethodException {
+    /**
+     * Method where parse the Parameters from the High Score Request
+     *
+     * @param httpExchange
+     * @return
+     */
+    public Map<String,String> getHighScoreListParams(HttpExchange httpExchange) throws HttpMethodException {
         validHttpMethod(httpExchange, "GET");
         Map<String, String> parameters = new HashMap<>();
         String uri = httpExchange.getRequestURI().toString();
@@ -96,8 +99,13 @@ public class KingHttpHandler implements HttpHandler {
         parameters.put(LEVEL_PARAMETER, levelId);
         return parameters;
     }
-
-    private Map<String,String> getScoreParameters(HttpExchange httpExchange) throws HttpMethodException, BadRequestException {
+    /**
+     * Method where parse the Parameters from the Score Request
+     *
+     * @param httpExchange
+     * @return
+     */
+    public Map<String,String> getScoreParameters(HttpExchange httpExchange) throws HttpMethodException, BadRequestException {
         validHttpMethod(httpExchange, "POST");
         Map<String, String> parameters = new HashMap<>();
         String uri = httpExchange.getRequestURI().toString();
@@ -108,8 +116,13 @@ public class KingHttpHandler implements HttpHandler {
         parameters.put(SCORE_PARAMETER, score);
         return parameters;
     }
-
-    private String getScoreFromBodyRequest(HttpExchange httpExchange) throws BadRequestException {
+    /**
+     * Method where parse the Parameters from the Score Request
+     *
+     * @param httpExchange
+     * @return
+     */
+    public String getScoreFromBodyRequest(HttpExchange httpExchange) throws BadRequestException {
         String score;
         try {
             InputStreamReader inputStreamReader = new InputStreamReader(httpExchange.getRequestBody(), "utf-8");
@@ -132,7 +145,7 @@ public class KingHttpHandler implements HttpHandler {
      * @param httpExchange
      * @return
      */
-    private static Map<String, String> getLoginParameters(HttpExchange httpExchange) throws HttpMethodException {
+    public static Map<String, String> getLoginParameters(HttpExchange httpExchange) throws HttpMethodException {
         validHttpMethod(httpExchange, "GET");
         Map<String, String> parameters = new HashMap<>();
         String uri = httpExchange.getRequestURI().toString();
@@ -141,13 +154,11 @@ public class KingHttpHandler implements HttpHandler {
         return parameters;
     }
     /**
-     * Method to validate if the request use the correct HttpMethod (GET or POST),
-     * is not throws an Exception
+     * Method to validate HttpMethod
      *
      * @param httpExchange
-     * @param method
      */
-    private static void validHttpMethod(HttpExchange httpExchange, String method) throws HttpMethodException {
+    public static void validHttpMethod(HttpExchange httpExchange, String method) throws HttpMethodException {
         if (!method.equalsIgnoreCase(httpExchange.getRequestMethod())) {
             // Bad request
             throw new HttpMethodException("Http Method not Valid");

@@ -7,15 +7,15 @@ public class Session implements Serializable{
     /**
      * UserId
      */
-    private Integer userId;
+    public Integer userId;
     /**
      * SessionKey
      */
-    private String sessionKey;
+    public String sessionKey;
     /**
      * createdTime
      */
-    private Date createdTime;
+    public Date createdTime;
 
     public Session(Integer userId, String sessionKey, Date createdTime) {
         this.userId = userId;

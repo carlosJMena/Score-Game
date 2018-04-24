@@ -6,13 +6,15 @@ public class ScoreService {
     /**
      * Max size by Levels.
      */
-    private static final int MAX_USER_SCORES = 15;
-
-    private final HashMap<Integer,TreeMap<Integer,Integer>> highestScoreList;
+    public static final int MAX_USER_SCORES = 15;
+    /**
+     * highestScoreList
+     */
+    public final HashMap<Integer,TreeMap<Integer,Integer>> highestScoreList;
 
 
     /**
-     * Instance of SessionService
+     * Inizialize highestScoreList
      */
     public ScoreService() {
         highestScoreList = new HashMap<Integer,TreeMap<Integer,Integer>>();
@@ -28,18 +30,34 @@ public class ScoreService {
         }
     }
 
-
+    /**
+     * Method in order to get userScores by levelId
+     *
+     * @param levelId
+     * @return userScores
+     */
     public TreeMap<Integer,Integer> getUserScoresByLevel(Integer levelId){
         return highestScoreList.get(levelId);
     }
 
-    private void removeUserScores(TreeMap<Integer, Integer> levelUsersScores) {
+    /**
+     * Method in order to know if a session is valid by sessionKey
+     *
+     * @param sessionKey key for the Session to validate
+     * @return a true if the session is valid
+     */
+    public void removeUserScores(TreeMap<Integer, Integer> levelUsersScores) {
         // remove the first key since it's the lowest score
         // The size of levelUsersScores always will be 15
         levelUsersScores.remove(levelUsersScores.firstKey());
     }
-
-    private void handleTheSave(TreeMap<Integer, Integer> levelUsersScores, Integer userId, Integer score, Integer levelId) {
+    /**
+     * Method in order to know if a session is valid by sessionKey
+     *
+     * @param sessionKey key for the Session to validate
+     * @return a true if the session is valid
+     */
+    public void handleTheSave(TreeMap<Integer, Integer> levelUsersScores, Integer userId, Integer score, Integer levelId) {
         if(levelUsersScores!=null){
             for(Map.Entry<Integer,Integer> userScore : levelUsersScores.entrySet()) {
                 if(userId.equals(userScore.getKey())){
