@@ -26,12 +26,8 @@ public class ScoreServiceTest {
 
         TreeMap<Integer,Integer> userScore = new TreeMap<Integer,Integer>();
         userScore.put(userId,score);
-        for(int i=1;i<15;i++){
-            scoreService.saveScore(1,i, ThreadLocalRandom.current().nextInt(1, 1000 + 1));
-        }
-
-        //TreeMap<Integer,Integer> userScore1 =  scoreService.getUserScoresByLevel(levelId);
-        //Assert.assertEquals(userScore1,userScore);
+        TreeMap<Integer,Integer> userScore1 =  scoreService.getUserScoresByLevel(levelId);
+        Assert.assertEquals(userScore1,userScore);
     }
 
 }
