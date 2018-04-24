@@ -43,8 +43,7 @@ public class ScoreService {
     /**
      * Method in order to know if a session is valid by sessionKey
      *
-     * @param sessionKey key for the Session to validate
-     * @return a true if the session is valid
+     * @param levelUsersScores userScores by level
      */
     public void removeUserScores(TreeMap<Integer, Integer> levelUsersScores) {
         // remove the first key since it's the lowest score
@@ -54,8 +53,10 @@ public class ScoreService {
     /**
      * Method in order to know if a session is valid by sessionKey
      *
-     * @param sessionKey key for the Session to validate
-     * @return a true if the session is valid
+     * @param levelUsersScores key for the Session to validate
+     * @param userId
+     * @param score
+     * @param levelId
      */
     public void handleTheSave(TreeMap<Integer, Integer> levelUsersScores, Integer userId, Integer score, Integer levelId) {
         if(levelUsersScores!=null){
