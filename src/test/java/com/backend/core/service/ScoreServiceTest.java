@@ -19,15 +19,18 @@ public class ScoreServiceTest {
 
 
     @Test
-    public void testSaveScore() throws Exception {
-        int levelId = 1;
-        int userId = 34;
-        int score = 25;
-
-        TreeMap<Integer,Integer> userScore = new TreeMap<Integer,Integer>();
-        userScore.put(userId,score);
-        TreeMap<Integer,Integer> userScore1 =  scoreService.getUserScoresByLevel(levelId);
-        Assert.assertEquals(userScore1,userScore);
+    public void testSaveScoresByOneLevel() throws Exception {
+        for(int i=1;i<15;i++){
+            scoreService.saveScore(1,i, ThreadLocalRandom.current().nextInt(1, 1000 + 1));
+        }
+    }
+    @Test
+    public void testSaveScoresBySeveralLevelsAndCheckMaxSize() throws Exception {
+        for(int i=1;i<16;i++){
+            for(int j=1;j<15;j++){
+                scoreService.saveScore(j,i, ThreadLocalRandom.current().nextInt(1, 1000 + 1));
+            }
+        }
     }
 
 }
