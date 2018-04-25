@@ -4,6 +4,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.SortedMap;
 import java.util.concurrent.ThreadLocalRandom;
 
 
@@ -37,11 +38,14 @@ public class ScoreServiceTest {
     }
     @Test
     public void testSaveScoresBySeveralLevelsAndCheckMaxSize() throws Exception {
+        int levelId = 4;
         for(int i=1;i<20;i++){
             for(int j=1;j<15;j++){
                 scoreService.saveScore(j,i, ThreadLocalRandom.current().nextInt(1, 1000 + 1));
             }
         }
+        SortedMap<Integer,Integer> userScoresByLevel =  scoreService.getUserScoresByLevel(levelId);
+        Assert.assertEquals(ScoreService.MAX_USER_SCORES,userScoresByLevel.size());
     }
     @Test
     public void testHighestUserScoresFromALevel() throws Exception {
