@@ -10,25 +10,37 @@ public class ScoreService {
     /**
      * highestScoreList
      */
-    public final HashMap<Integer,TreeMap<Integer,Integer>> highestScoreList;
+    public final HashMap<Integer,SortedMap<Integer,Integer>> highestScoreList;
 
 
     /**
      * Inizialize highestScoreList
      */
     public ScoreService() {
-        highestScoreList = new HashMap<Integer,TreeMap<Integer,Integer>>();
+        highestScoreList = new HashMap<Integer,SortedMap<Integer,Integer>>();
     }
 
     public synchronized void saveScore(Integer levelId, Integer userId, Integer score) {
-        TreeMap<Integer,Integer> levelUsersScores =  getUserScoresByLevel(levelId);
+        SortedMap<Integer,Integer> levelUsersScores =  getUserScoresByLevel(levelId);
         handleTheSave(levelUsersScores, userId , score, levelId);
-        SortedSet<Map.Entry<Integer,Integer>> sortedMap = entriesSortedByValues(getUserScoresByLevel(levelId));
-
-        if(this.highestScoreList.get(levelId).size()>MAX_USER_SCORES){
-            removeUserScores(this.highestScoreList.get(levelId));
+        Set<Map.Entry<Integer,Integer>>  sortedUserScores = entriesSortedByValues(getUserScoresByLevel(levelId));
+        if(sortedUserScores.size()>MAX_USER_SCORES){
+            removeUserScores(sortedUserScores);
         }
+        levelUsersScores =  getUserScoresByLevel(levelId);
+        levelUsersScores.clear();
+        // set sortedUserScores and the 15 highest into highestScoreList
+        for (Iterator<Map.Entry<Integer, Integer>> it = sortedUserScores.iterator(); it.hasNext(); ) {
+            Map.Entry<Integer, Integer> entry = it.next();
+            levelUsersScores.put(entry.getKey(),entry.getValue());
+        }
+
+        System.out.println(this.highestScoreList);
+        System.out.println("---------------------------------------------------------------------------");
+        System.out.println("---------------------------------------------------------------------------");
+        System.out.println("---------------------------------------------------------------------------");
     }
+
 
     /**
      * Method in order to get userScores by levelId
@@ -36,19 +48,26 @@ public class ScoreService {
      * @param levelId
      * @return userScores
      */
-    public TreeMap<Integer,Integer> getUserScoresByLevel(Integer levelId){
+    public SortedMap<Integer,Integer> getUserScoresByLevel(Integer levelId){
         return highestScoreList.get(levelId);
     }
 
     /**
      * Method in order to know if a session is valid by sessionKey
      *
-     * @param levelUsersScores userScores by level
+     * @param sortedUserScores sortedUserScores by level
      */
-    public void removeUserScores(TreeMap<Integer, Integer> levelUsersScores) {
+    public void removeUserScores(Set<Map.Entry<Integer,Integer>> sortedUserScores) {
         // remove the first key since it's the lowest score
         // The size of levelUsersScores always will be 15
-        levelUsersScores.remove(levelUsersScores.firstKey());
+        for (Iterator<Map.Entry<Integer, Integer>> iterator = sortedUserScores.iterator(); iterator.hasNext();) {
+            Map.Entry<Integer, Integer> s =  iterator.next();
+            // remove if the iterator is the first key of the sortedUSerScores since that will be the lowest score
+            if(s.equals(sortedUserScores.iterator().next())){
+                iterator.remove();
+                return;
+            }
+        }
     }
     /**
      * Method in order to know if a session is valid by sessionKey
@@ -58,7 +77,7 @@ public class ScoreService {
      * @param score
      * @param levelId
      */
-    public void handleTheSave(TreeMap<Integer, Integer> levelUsersScores, Integer userId, Integer score, Integer levelId) {
+    public void handleTheSave(SortedMap<Integer, Integer> levelUsersScores, Integer userId, Integer score, Integer levelId) {
         if(levelUsersScores!=null){
             for(Map.Entry<Integer,Integer> userScore : levelUsersScores.entrySet()) {
                 if(userId.equals(userScore.getKey())){

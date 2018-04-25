@@ -26,7 +26,7 @@ public class ScoreServiceTest {
     }
     @Test
     public void testSaveScoresBySeveralLevelsAndCheckMaxSize() throws Exception {
-        for(int i=1;i<16;i++){
+        for(int i=1;i<20;i++){
             for(int j=1;j<15;j++){
                 scoreService.saveScore(j,i, ThreadLocalRandom.current().nextInt(1, 1000 + 1));
             }
