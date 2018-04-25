@@ -58,8 +58,7 @@ public class ScoreService {
      * @param sortedUserScores sortedUserScores by level
      */
     public void removeUserScores(Set<Map.Entry<Integer,Integer>> sortedUserScores) {
-        // remove the first key since it's the lowest score
-        // The size of levelUsersScores always will be 15
+        // The size of sortedUserScores always will be 15
         for (Iterator<Map.Entry<Integer, Integer>> iterator = sortedUserScores.iterator(); iterator.hasNext();) {
             Map.Entry<Integer, Integer> s =  iterator.next();
             // remove if the iterator is the first key of the sortedUSerScores since that will be the lowest score
