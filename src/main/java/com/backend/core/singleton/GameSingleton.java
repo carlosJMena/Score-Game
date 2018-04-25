@@ -82,7 +82,6 @@ public class GameSingleton {
      * @param levelId    level to get the HighScoreList
      */
     public synchronized String getHighScoreList(Integer levelId) {
-        String list = scoreService.getUserScoresByLevel(levelId)!=null?scoreService.getUserScoresByLevel(levelId).toString().replace("[", "").replace("]", "").replace(", ", ","):"";
-        return list;
+        return  scoreService.getUserScoresByLevelAndSorted(levelId)!=null?scoreService.getUserScoresByLevelAndSorted(levelId).toString().replace("[", "").replace("]", "").replace(", ", ","):"";
     }
 }

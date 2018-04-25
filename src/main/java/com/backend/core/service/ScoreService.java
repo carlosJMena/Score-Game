@@ -51,6 +51,15 @@ public class ScoreService {
     public SortedMap<Integer,Integer> getUserScoresByLevel(Integer levelId){
         return highestScoreList.get(levelId);
     }
+    /**
+     * Method in order to get userScores by levelId and sorted
+     *
+     * @param levelId
+     * @return userScores sorted
+     */
+    public Set<Map.Entry<Integer,Integer>> getUserScoresByLevelAndSorted(Integer levelId){
+        return entriesSortedByValues(getUserScoresByLevel(levelId));
+    }
 
     /**
      * Method in order to know if a session is valid by sessionKey
